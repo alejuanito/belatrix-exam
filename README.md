@@ -10,7 +10,7 @@ writeLogConsole, writeLogBD, writeLogFile).
 * Se configuró una bd H2 en memoria para escribir el log en la bd.
 * Se procedio a crear la tabla y grabar en dicha tabla cada vez que el parametro sea true.
 * Se agrego un properties para configurar los parametros de conexión a la bd y la ubicación del path.
-* Se crearon 9 test unitarios.
+* Se crearon 10 test unitarios.
 * Se agrego comentarios a cada método.
 
 

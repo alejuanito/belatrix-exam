@@ -101,6 +101,13 @@ public class ExerciseApplicationTests {
             assertThat(map.get("logFileFolder"), is(not("")));                                               
 	}
         
+        @Test(expected = Exception.class)
+	public void testInvalidPathException() throws Exception {    
+            MeJobLogger.setLogToFile(true);
+            map.put("logFileFolder", "X:\\");
+            assertTrue(MeJobLogger.writeLogFile("MESSAGE"));
+	}
+        
         @Test
         public void testLevelErrorLog(){
             int expected = 2;
@@ -122,10 +129,10 @@ public class ExerciseApplicationTests {
         @Test
         public void testWriteToLog() throws Exception{
             MeJobLogger.setLogToConsole(true);
-            assertTrue(MeJobLogger.writeLogConsole(""));
+            assertTrue(MeJobLogger.writeLogConsole("MESSAGE"));
             
             MeJobLogger.setLogToFile(true);
-            assertTrue(MeJobLogger.writeLogFile(""));
+            assertTrue(MeJobLogger.writeLogFile("MESSAGE"));
             
             MeJobLogger.setLogToDatabase(true);
             assertTrue(MeJobLogger.writeLogBD(true, true, true));

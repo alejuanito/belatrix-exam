@@ -49,6 +49,17 @@ public class MeJobLogger {
         dbParams = dbParamsMap;
     }
 
+    public static void LogMessage(String messageText, boolean message, boolean warning, boolean error) throws Exception {                
+        if(!validateConfiguration(messageText, message, warning, error)){
+            return;
+        }        
+        
+        writeLogConsole(messageText);
+        writeLogFile(messageText);
+        writeLogBD(message, warning, error);
+    }
+    
+    
     /**
      * validate the correct configuration
      * @param messageText
@@ -81,11 +92,8 @@ public class MeJobLogger {
         connection = null;
         Properties connectionProps = new Properties();
         connectionProps.put("user", dbParams.get("userName"));
-        connectionProps.put("password", dbParams.get("password"));
-        //jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
-        
-        connection = DriverManager.getConnection("jdbc:"+dbParams.get("dbms")+":mem:"+dbParams.get("serverName"), connectionProps);
-        
+        connectionProps.put("password", dbParams.get("password"));        
+        connection = DriverManager.getConnection("jdbc:"+dbParams.get("dbms")+":mem:"+dbParams.get("serverName"), connectionProps);        
     }
     
     /**
@@ -121,7 +129,8 @@ public class MeJobLogger {
      * @return boolean
      * @throws Exception 
      */
-    public static boolean writeLogConsole(String messageText) throws Exception{                            
+    public static boolean writeLogConsole(String messageText) throws Exception{    
+        messageText = messageText.trim(); 
         if(!logToConsole){
             return logToConsole;
         }
@@ -162,6 +171,7 @@ public class MeJobLogger {
      * @throws Exception 
      */
     public static boolean writeLogFile(String messageText) throws Exception{
+        messageText = messageText.trim(); 
         if(!logToFile){
             return logToFile;
         }
@@ -174,17 +184,6 @@ public class MeJobLogger {
         logger.log(Level.INFO, messageText);
         return logToFile;
     }
-    
-    public static void LogMessage(String messageText, boolean message, boolean warning, boolean error) throws Exception {                
-        if(!validateConfiguration(messageText, message, warning, error)){
-            return;
-        }        
-        messageText = messageText.trim(); 
-        writeLogConsole(messageText);
-        writeLogFile(messageText);
-        writeLogBD(message, warning, error);
-    }
-
     
     
     public static boolean isLogToFile() {
