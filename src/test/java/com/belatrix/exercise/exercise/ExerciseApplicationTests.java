@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import org.junit.Assert;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -95,13 +96,41 @@ public class ExerciseApplicationTests {
 	}
         
         @Test
-	public void testParameterFolderPath() throws Exception {
-              
+	public void testParameterFolderPath() throws Exception {              
             assertNotNull(map.get("logFileFolder"));
-            assertThat(map.get("logFileFolder"), is(not("")));
-                                   
-            
+            assertThat(map.get("logFileFolder"), is(not("")));                                               
 	}
+        
+        @Test
+        public void testLevelErrorLog(){
+            int expected = 2;
+            Assert.assertEquals(MeJobLogger.levelLog(false, false, true), expected);            
+        }
+        
+        @Test
+        public void testLevelWarningLog(){
+            int expected = 3;
+            Assert.assertEquals(MeJobLogger.levelLog(false, true, false), expected);            
+        }
+        
+        @Test
+        public void testLevelMessageLog(){
+            int expected = 1;
+            Assert.assertEquals(MeJobLogger.levelLog(true, false, false), expected);            
+        }
+        
+        @Test
+        public void testWriteToLog() throws Exception{
+            MeJobLogger.setLogToConsole(true);
+            assertTrue(MeJobLogger.writeLogConsole(""));
+            
+            MeJobLogger.setLogToFile(true);
+            assertTrue(MeJobLogger.writeLogFile(""));
+            
+            MeJobLogger.setLogToDatabase(true);
+            assertTrue(MeJobLogger.writeLogBD(true, true, true));
+                     
+        }
         
         
 

@@ -36,8 +36,8 @@ public class ExerciseApplication {
                 map.put("password", "pass");
                 map.put("portNumber", "port");
                 MeJobLogger job = new MeJobLogger(true, true, true, true, true, true, map);
-                MeJobLogger.LogMessage("aa", true, true, true);
-                MeJobLogger.LogMessage("bb", true, true, true);
+                MeJobLogger.LogMessage("message", true, true, true);
+                
             } catch (Exception ex) {
                 Logger.getLogger(ExerciseApplication.class.getName()).log(Level.SEVERE, null, ex);
             }

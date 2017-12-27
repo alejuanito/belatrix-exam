@@ -14,18 +14,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 
-@PropertySource("classpath:application.properties")
+
 public class MeJobLogger {
 
     private static boolean logToFile;
@@ -53,6 +49,15 @@ public class MeJobLogger {
         dbParams = dbParamsMap;
     }
 
+    /**
+     * validate the correct configuration
+     * @param messageText
+     * @param message 
+     * @param warning
+     * @param error
+     * @return
+     * @throws Exception 
+     */
     public static boolean validateConfiguration(String messageText, boolean message, boolean warning, boolean error) throws Exception{
         
         if (messageText == null || messageText.length() == 0) {
@@ -68,6 +73,10 @@ public class MeJobLogger {
         return true;
     }
     
+    /**
+     * connect to database
+     * @throws Exception 
+     */
     public static void connectDB() throws Exception{
         connection = null;
         Properties connectionProps = new Properties();
@@ -79,63 +88,101 @@ public class MeJobLogger {
         
     }
     
-    public static void LogMessage(String messageText, boolean message, boolean warning, boolean error) throws Exception {
-        
-        
-        if(!validateConfiguration(messageText, message, warning, error)){
-            return;
-        }        
-        messageText = messageText.trim();
-        connectDB();
-        
-        int t = 0;
-        if (message && logMessage) {
-            t = 1;
-        }
+    /**
+     * disconnect to database
+     * @throws Exception 
+     */
+    public static void disConnectDB() throws Exception{
+        connection.close();          
+    }
+    
+    /**
+     * identify the level log
+     * @param message
+     * @param warning
+     * @param error
+     * @return 
+     */
+    public static int levelLog(boolean message, boolean warning, boolean error){
         if (error && logError) {
-            t = 2;
+            return 2;
+        }else if(warning && logWarning){
+            return 3;
+        }else if(message && logMessage){
+            return 1;
+        }else{
+            return 0;
         }
-        if (warning && logWarning) {
-            t = 3;
+    } 
+    
+    /**
+     * write log in the console
+     * @param messageText
+     * @return boolean
+     * @throws Exception 
+     */
+    public static boolean writeLogConsole(String messageText) throws Exception{                            
+        if(!logToConsole){
+            return logToConsole;
         }
+        ConsoleHandler ch = new ConsoleHandler();
+        logger.addHandler(ch);
+        logger.log(Level.INFO, messageText);    
+        return logToConsole;
+    }
+    
+    /**
+     * write log in the database
+     * @param message
+     * @param warning
+     * @param error
+     * @throws Exception 
+     */
+    public static boolean writeLogBD(boolean message, boolean warning, boolean error) throws Exception{
+        if(!logToDatabase){
+            return logToDatabase;
+        }
+        connectDB();    
         Statement stmt = connection.createStatement();
-        String l = null;
+        int t = levelLog(message,  warning,  error);
+        stmt.executeUpdate("CREATE TABLE Log_Values(id boolean , name varchar(255))");
+        stmt.executeUpdate("insert into Log_Values (id, name) values ('" + message + "', " + String.valueOf(t)
+                + ")");
+        ResultSet rs = stmt.executeQuery("select * from Log_Values ");
+        while (rs.next()) {
+            System.out.println("DATA: "+ rs.getString("id") + "|" + rs.getString("name") );
+        }
+        disConnectDB();
+        return logToDatabase;
+    }
+    
+    /**
+     * write log in the file
+     * @param messageText
+     * @throws Exception 
+     */
+    public static boolean writeLogFile(String messageText) throws Exception{
+        if(!logToFile){
+            return logToFile;
+        }
         File logFile = new File(dbParams.get("logFileFolder") + "/logFile.txt");
         if (!logFile.exists()) {
             logFile.createNewFile();
         }
         FileHandler fh = new FileHandler(dbParams.get("logFileFolder") + "/logFile.txt");
-        ConsoleHandler ch = new ConsoleHandler();
-        if (error && logError) {
-            l = l + "error " + DateFormat.getDateInstance(DateFormat.LONG).format(new Date())
-                    + messageText;
-        }
-        if (warning && logWarning) {
-            l = l + "warning " + DateFormat.getDateInstance(DateFormat.LONG).format(new Date()) + messageText;
-        }
-        if (message && logMessage) {
-            l = l + "message " + DateFormat.getDateInstance(DateFormat.LONG).format(new Date()) + messageText;
-        }
-        if (logToFile) {
-            logger.addHandler(fh);
-            logger.log(Level.INFO, messageText);
-        }
-        if (logToConsole) {
-            logger.addHandler(ch);
-            logger.log(Level.INFO, messageText);
-        }
-        if (logToDatabase) {
-            
-            //String CreateQuery = "CREATE TABLE Log_Values(id int primary key, name varchar(255))";
-            stmt.executeUpdate("CREATE TABLE Log_Values(id boolean , name varchar(255))");
-            stmt.executeUpdate("insert into Log_Values (id, name) values ('" + message + "', " + String.valueOf(t)
-                    + ")");
-            ResultSet rs = stmt.executeQuery("select * from Log_Values ");
-            while (rs.next()) {
-                System.out.println("DATA: "+ rs.getString("id") + "|" + rs.getString("name") );
-            }
-            connection.close();
-        }
+        logger.addHandler(fh);
+        logger.log(Level.INFO, messageText);
+        return logToFile;
+    }
+    
+    public static void LogMessage(String messageText, boolean message, boolean warning, boolean error) throws Exception {                
+        if(!validateConfiguration(messageText, message, warning, error)){
+            return;
+        }        
+        messageText = messageText.trim(); 
+        writeLogConsole(messageText);
+        writeLogFile(messageText);
+        writeLogBD(message, warning, error);
     }
 
     
