@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2019-11-30T11:15:22</date>
+  <millis>1575130522887</millis>
+  <sequence>1</sequence>
+  <logger>MiLog</logger>
+  <level>SEVERE</level>
+  <class>com.belatrix.exercise.exercise.service.impl.LogServiceImpl</class>
+  <method>registerLogToFile</method>
+  <thread>1</thread>
+  <message>ERROR GRAVE</message>
+</record>
+<record>
+  <date>2019-11-30T11:15:22</date>
+  <millis>1575130522906</millis>
+  <sequence>2</sequence>
+  <logger>MiLog</logger>
+  <level>SEVERE</level>
+  <class>com.belatrix.exercise.exercise.service.impl.LogServiceImpl</class>
+  <method>registerLogToFile</method>
+  <thread>1</thread>
+  <message>ERROR GRAVE</message>
+</record>
+<record>
+  <date>2019-11-30T11:15:22</date>
+  <millis>1575130522924</millis>
+  <sequence>3</sequence>
+  <logger>MiLog</logger>
+  <level>SEVERE</level>
+  <class>com.belatrix.exercise.exercise.service.impl.LogServiceImpl</class>
+  <method>registerLogToConsole</method>
+  <thread>1</thread>
+  <message>ERROR GRAVE</message>
+</record>
+</log>
