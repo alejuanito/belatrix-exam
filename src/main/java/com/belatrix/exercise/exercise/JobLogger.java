@@ -5,10 +5,7 @@
  */
 package com.belatrix.exercise.exercise;
 
-/**
- *
- * @author Alejandro
- */
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -64,7 +61,7 @@ public class JobLogger {
             throw new Exception("Error or Warning or Message must be specified");
         }
         /**La conexión a la bd esta en el mismo metodo
-         * Los parámetros de conexión estan harcodeados
+         * Los parámetros de conexión estan harcodeados deberia usarse un archivo properties
          */
         Connection connection = null;
         Properties connectionProps = new Properties();
@@ -72,7 +69,6 @@ public class JobLogger {
         connectionProps.put("password", dbParams.get("password"));
         /**
          * Se esta creando la conexión sin tener la certeza de que se va a grabar en la bd
-         * Se configuró la conexión a una bd H2 en memoria
          */
         connection = DriverManager.getConnection("jdbc:" + dbParams.get("dbms") + "://"
                 + dbParams.get("serverName")
